@@ -4,8 +4,11 @@ import com.personal.coffee_catalog.request.CoffeeRequest;
 import com.personal.coffee_catalog.response.CoffeeResponse;
 import com.personal.coffee_catalog.response.GenericResponse;
 import com.personal.coffee_catalog.service.CoffeeService;
-import java.util.List;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +32,19 @@ public class CoffeeController {
   private final CoffeeService coffeeService;
 
   /**
-   * Retrieves all active coffees from the catalog.
+   * Retrieves a paginated list of all active coffees.
    *
-   * @return ResponseEntity containing a GenericResponse with a list of CoffeeResponse objects
+   * @param pageable Pageable object containing pagination and sorting information [page: page
+   *                 number (default: 0), size: number of items per page (default: 10), sort:
+   *                 sorting criteria (default: id,asc)]
+   * @return ResponseEntity containing a GenericResponse with a Page of CoffeeResponse objects
    */
   @GetMapping(value = "/coffee", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<GenericResponse<List<CoffeeResponse>>> getAllActiveCoffees() {
+  public ResponseEntity<GenericResponse<Page<CoffeeResponse>>> getAllActiveCoffees(
+    @PageableDefault(sort = "id") Pageable pageable) {
     return ResponseEntity.ok(
-      GenericResponse.<List<CoffeeResponse>>builder()
-        .data(coffeeService.getAllActiveCoffees())
+      GenericResponse.<Page<CoffeeResponse>>builder()
+        .data(coffeeService.getAllActiveCoffees(pageable))
         .message(HttpStatus.OK.getReasonPhrase())
         .build()
     );
@@ -68,7 +75,7 @@ public class CoffeeController {
   @PostMapping(value = "/coffee", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {
     MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<GenericResponse<CoffeeResponse>> createCoffee(
-    @RequestBody CoffeeRequest coffeeRequest) {
+    @Valid @RequestBody CoffeeRequest coffeeRequest) {
     return ResponseEntity.ok(
       GenericResponse.<CoffeeResponse>builder()
         .data(coffeeService.createCoffee(coffeeRequest))

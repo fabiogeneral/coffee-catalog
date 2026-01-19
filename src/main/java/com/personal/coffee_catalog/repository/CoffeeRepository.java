@@ -3,6 +3,8 @@ package com.personal.coffee_catalog.repository;
 import com.personal.coffee_catalog.entity.Coffee;
 import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -27,7 +29,7 @@ public interface CoffeeRepository extends JpaRepository<Coffee, Long> {
   List<Coffee> findByRoastLevel(String roastLevel);
 
   // Find by active status
-  List<Coffee> findByIsActiveTrue();
+  Page<Coffee> findByIsActiveTrue(Pageable pageable);
 
   // Find by origin country and roast level
   List<Coffee> findByOriginCountryAndRoastLevel(String originCountry, String roastLevel);

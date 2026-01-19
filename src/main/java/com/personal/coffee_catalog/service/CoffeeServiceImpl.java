@@ -6,9 +6,11 @@ import com.personal.coffee_catalog.repository.CoffeeRepository;
 import com.personal.coffee_catalog.request.CoffeeRequest;
 import com.personal.coffee_catalog.response.CoffeeResponse;
 import com.personal.coffee_catalog.utils.CommonHelper;
-import java.util.List;
+import java.math.RoundingMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,10 +25,10 @@ public class CoffeeServiceImpl implements CoffeeService {
   /**
    * Get all active coffees
    */
-  public List<CoffeeResponse> getAllActiveCoffees() {
-    List<Coffee> allActiveCoffees = coffeeRepository.findByIsActiveTrue();
+  public Page<CoffeeResponse> getAllActiveCoffees(Pageable pageable) {
+    Page<Coffee> allActiveCoffees = coffeeRepository.findByIsActiveTrue(pageable);
 
-    return coffeeMapper.coffeesToResponse(allActiveCoffees);
+    return allActiveCoffees.map(coffeeMapper::coffeeToResponse);
   }
 
   /**
@@ -58,8 +60,19 @@ public class CoffeeServiceImpl implements CoffeeService {
   public CoffeeResponse updateCoffee(Long coffeeId, CoffeeRequest coffeeRequest) {
     Coffee coffee = CommonHelper.findByIdOrThrow(ENTITY, coffeeRepository, coffeeId);
 
-    if (coffeeRequest.getName() != null) {
-      coffee.setName(coffeeRequest.getName());
+    CommonHelper.validateAndSet(coffeeRequest.getName(), coffee::setName, "Name", true);
+    CommonHelper.validateAndSet(coffeeRequest.getOriginCountry(), coffee::setOriginCountry,
+      "Origin Country", true);
+    CommonHelper.validateAndSet(coffeeRequest.getRoastLevel(), coffee::setRoastLevel,
+      "Roast Level", true);
+    CommonHelper.validateAndSet(coffeeRequest.getOriginRegion(), coffee::setOriginRegion,
+      "Origin Region", false);
+    // TODO: add other fields
+    if (coffeeRequest.getPrice() != null) {
+      if (coffeeRequest.getPrice().doubleValue() <= 0) {
+        throw new IllegalArgumentException("Price must be positive");
+      }
+      coffee.setPrice(coffeeRequest.getPrice().setScale(2, RoundingMode.HALF_UP));
     }
     if (coffeeRequest.getIsActive() != null) {
       coffee.setIsActive(coffeeRequest.getIsActive());
