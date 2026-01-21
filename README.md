@@ -27,3 +27,18 @@
 ## Spring Boot
 
 `./mvnw spring-boot:run`
+
+## Swagger UI
+
+`http://localhost:8080/swagger-ui.html`
+
+## OpenAPI api-docs (Postman Collection)
+
+`http://localhost:8080/api-docs`
+
+### Postman Collection
+
+Import the collection and environment:
+
+- Collection: `src/main/resources/postman/collection.json`
+- Environment: `src/main/resources/postman/local_environment.json`

@@ -1,0 +1,22 @@
+{
+  "id": "a3abb001-b85d-4d0c-ad78-e6d7c4ec09d9",
+  "name": "Coffee Catalog Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "bearerToken",
+      "value": "",
+      "type": "any",
+      "enabled": true
+    }
+  ],
+  "color": null,
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-01-22T01:19:56.413Z",
+  "_postman_exported_using": "Postman/11.81.2"
+}

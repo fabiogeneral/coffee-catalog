@@ -35,7 +35,7 @@ public class SecurityConfig {
   @Bean
   public UserDetailsService userDetailsService() {
     return username -> userRepository.findByEmail(username)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 
   @Bean
@@ -46,11 +46,11 @@ public class SecurityConfig {
   @Bean
   public AuthenticationManager authenticationManager(HttpSecurity http) {
     AuthenticationManagerBuilder authManagerBuilder =
-        http.getSharedObject(AuthenticationManagerBuilder.class);
+      http.getSharedObject(AuthenticationManagerBuilder.class);
 
     authManagerBuilder
-        .userDetailsService(userDetailsService())
-        .passwordEncoder(passwordEncoder());
+      .userDetailsService(userDetailsService())
+      .passwordEncoder(passwordEncoder());
 
     return authManagerBuilder.build();
   }
@@ -58,15 +58,16 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) {
     http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+      .csrf(csrf -> csrf.disable())
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/api/auth/**").permitAll()
+        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        .anyRequest().authenticated()
+      )
+      .sessionManagement(session -> session
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      )
+      .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

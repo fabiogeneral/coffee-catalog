@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class AuthService {
   public AuthResponse register(RegisterRequest request) {
     // Check if user already exists
     if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-      throw new RuntimeException("Email already registered");
+      throw new IllegalArgumentException("Email already registered");
     }
 
     // Create new user
@@ -47,14 +48,19 @@ public class AuthService {
       .build();
   }
 
+  @Transactional(timeout = 5)
   public AuthResponse login(LoginRequest request) {
     // Authenticate user
-    authenticationManager.authenticate(
-      new UsernamePasswordAuthenticationToken(
-        request.getEmail(),
-        request.getPassword()
-      )
-    );
+    try {
+      authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+          request.getEmail(),
+          request.getPassword()
+        )
+      );
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid email or password");
+    }
 
     // Get user from database
     var user = userRepository.findByEmail(request.getEmail())
