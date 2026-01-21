@@ -2,7 +2,7 @@ package com.personal.coffee_catalog.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.personal.coffee_catalog.entity.Coffee;
+import com.personal.coffee_catalog.model.Coffee;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;

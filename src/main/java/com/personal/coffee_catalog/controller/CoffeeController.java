@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/api/coffee")
 @RequiredArgsConstructor
 @CrossOrigin
 //@Tag(name = "Coffee", description = "Coffee APIs")
@@ -39,7 +40,7 @@ public class CoffeeController {
    *                 sorting criteria (default: id,asc)]
    * @return ResponseEntity containing a GenericResponse with a Page of CoffeeResponse objects
    */
-  @GetMapping(value = "/coffee", produces = {MediaType.APPLICATION_JSON_VALUE})
+  @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<GenericResponse<Page<CoffeeResponse>>> getAllActiveCoffees(
     @PageableDefault(sort = "id") Pageable pageable) {
     return ResponseEntity.ok(
@@ -53,14 +54,14 @@ public class CoffeeController {
   /**
    * Retrieves a specific coffee by its ID.
    *
-   * @param coffeeId ID of the coffee to be retrieved
+   * @param id ID of the coffee to be retrieved
    * @return ResponseEntity containing a GenericResponse with the CoffeeResponse object
    */
-  @GetMapping(value = "/coffee/{coffeeId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<GenericResponse<CoffeeResponse>> getCoffee(@PathVariable Long coffeeId) {
+  @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<GenericResponse<CoffeeResponse>> getCoffee(@PathVariable Long id) {
     return ResponseEntity.ok(
       GenericResponse.<CoffeeResponse>builder()
-        .data(coffeeService.getCoffee(coffeeId))
+        .data(coffeeService.getCoffee(id))
         .message(HttpStatus.OK.getReasonPhrase())
         .build()
     );
@@ -72,8 +73,9 @@ public class CoffeeController {
    * @param coffeeRequest CoffeeRequest object containing the details of the coffee to be created
    * @return ResponseEntity containing a GenericResponse with the created CoffeeResponse object
    */
-  @PostMapping(value = "/coffee", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {
+  @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {
     MediaType.APPLICATION_JSON_VALUE})
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<GenericResponse<CoffeeResponse>> createCoffee(
     @Valid @RequestBody CoffeeRequest coffeeRequest) {
     return ResponseEntity.ok(
@@ -87,18 +89,18 @@ public class CoffeeController {
   /**
    * Updates an existing coffee entry in the catalog.
    *
-   * @param coffeeId      ID of the coffee to be updated
+   * @param id            ID of the coffee to be updated
    * @param coffeeRequest CoffeeRequest object containing the updated details of the coffee
    * @return ResponseEntity containing a GenericResponse with the updated CoffeeResponse object
    */
-  @PatchMapping(value = "/coffee/{coffeeId}", produces = {
-    MediaType.APPLICATION_JSON_VALUE}, consumes = {
+  @PatchMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {
     MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<GenericResponse<CoffeeResponse>> updateCoffee(@PathVariable Long coffeeId,
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<GenericResponse<CoffeeResponse>> updateCoffee(@PathVariable Long id,
     @RequestBody CoffeeRequest coffeeRequest) {
     return ResponseEntity.ok(
       GenericResponse.<CoffeeResponse>builder()
-        .data(coffeeService.updateCoffee(coffeeId, coffeeRequest))
+        .data(coffeeService.updateCoffee(id, coffeeRequest))
         .message(HttpStatus.OK.getReasonPhrase())
         .build()
     );
@@ -107,15 +109,15 @@ public class CoffeeController {
   /**
    * Deactivates a coffee entry in the catalog (Soft Delete).
    *
-   * @param coffeeId ID of the coffee to be deactivated
+   * @param id ID of the coffee to be deactivated
    * @return Empty response object
    */
-  @PatchMapping("/coffee/{coffeeId}/deactivate")
-  public ResponseEntity<GenericResponse<CoffeeResponse>> deactivateCoffee(
-    @PathVariable Long coffeeId) {
+  @PatchMapping("/{id}/deactivate")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<GenericResponse<CoffeeResponse>> deactivateCoffee(@PathVariable Long id) {
     return ResponseEntity.ok(
       GenericResponse.<CoffeeResponse>builder()
-        .data(coffeeService.updateCoffee(coffeeId, CoffeeRequest.builder().isActive(false).build()))
+        .data(coffeeService.updateCoffee(id, CoffeeRequest.builder().isActive(false).build()))
         .message("Coffee deactivated successfully")
         .build()
     );
@@ -124,14 +126,15 @@ public class CoffeeController {
   /**
    * Deletes a coffee entry from the catalog (Hard Delete).
    *
-   * @param coffeeId ID of the coffee to be deleted
+   * @param id ID of the coffee to be deleted
    * @return ResponseEntity containing a GenericResponse with the deleted CoffeeResponse object
    */
-  @DeleteMapping(value = "/coffee/{coffeeId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<GenericResponse<CoffeeResponse>> deleteCoffee(@PathVariable Long coffeeId) {
+  @DeleteMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<GenericResponse<CoffeeResponse>> deleteCoffee(@PathVariable Long id) {
     return ResponseEntity.ok(
       GenericResponse.<CoffeeResponse>builder()
-        .data(coffeeService.deleteCoffee(coffeeId))
+        .data(coffeeService.deleteCoffee(id))
         .message("Coffee deleted successfully")
         .build()
     );

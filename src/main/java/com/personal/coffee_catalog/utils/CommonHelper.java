@@ -11,18 +11,18 @@ public class CommonHelper {
   }
 
   /**
-   * Find entity by ID or throw exception if not found
+   * Find model by ID or throw exception if not found
    *
-   * @param entity     Entity name
+   * @param model      Model name
    * @param repository JPA repository
-   * @param <T>        Entity type
-   * @param id         Entity ID
-   * @return Entity
-   * @throws IllegalArgumentException if entity not found
+   * @param <T>        Model type
+   * @param id         Model ID
+   * @return Model
+   * @throws IllegalArgumentException if model not found
    */
-  public static <T> T findByIdOrThrow(String entity, JpaRepository<T, Long> repository, Long id) {
+  public static <T> T findByIdOrThrow(String model, JpaRepository<T, Long> repository, Long id) {
     return repository.findById(id)
-      .orElseThrow(() -> new ResourceNotFoundException(entity, "id", id));
+      .orElseThrow(() -> new ResourceNotFoundException(model, "id", id));
   }
 
   /**

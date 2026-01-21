@@ -22,6 +22,11 @@ spring:
     init:
       mode: never  # We use docker-entrypoint-initdb.d instead
 
+jwt:
+  secret: myVerySecureSecretKeyThatIsAtLeast32CharsLongForHS256Algorithm # In production, use a secure method to store secrets
+  expiration: 900000 # 15 minutes
+  #refresh-expiration: 604800000 # 7 days
+
 logging:
   level:
     root: info

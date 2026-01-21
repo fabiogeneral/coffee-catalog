@@ -1,4 +1,4 @@
-package com.personal.coffee_catalog.entity;
+package com.personal.coffee_catalog.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

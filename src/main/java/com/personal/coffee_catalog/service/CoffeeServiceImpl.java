@@ -1,26 +1,24 @@
 package com.personal.coffee_catalog.service;
 
-import com.personal.coffee_catalog.entity.Coffee;
 import com.personal.coffee_catalog.mapper.CoffeeMapper;
+import com.personal.coffee_catalog.model.Coffee;
 import com.personal.coffee_catalog.repository.CoffeeRepository;
 import com.personal.coffee_catalog.request.CoffeeRequest;
 import com.personal.coffee_catalog.response.CoffeeResponse;
 import com.personal.coffee_catalog.utils.CommonHelper;
 import java.math.RoundingMode;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CoffeeServiceImpl implements CoffeeService {
 
   private final CoffeeRepository coffeeRepository;
   private final CoffeeMapper coffeeMapper;
-  private static final String ENTITY = "Coffee";
+  private static final String MODEL = "Coffee";
 
   /**
    * Get all active coffees
@@ -35,7 +33,7 @@ public class CoffeeServiceImpl implements CoffeeService {
    * Get coffee by ID
    */
   public CoffeeResponse getCoffee(Long coffeeId) {
-    Coffee coffee = CommonHelper.findByIdOrThrow(ENTITY, coffeeRepository, coffeeId);
+    Coffee coffee = CommonHelper.findByIdOrThrow(MODEL, coffeeRepository, coffeeId);
 
     if (!coffee.getIsActive()) {
       throw new IllegalArgumentException("Coffee ID " + coffeeId + " is not active");
@@ -58,7 +56,7 @@ public class CoffeeServiceImpl implements CoffeeService {
    * Update coffee
    */
   public CoffeeResponse updateCoffee(Long coffeeId, CoffeeRequest coffeeRequest) {
-    Coffee coffee = CommonHelper.findByIdOrThrow(ENTITY, coffeeRepository, coffeeId);
+    Coffee coffee = CommonHelper.findByIdOrThrow(MODEL, coffeeRepository, coffeeId);
 
     CommonHelper.validateAndSet(coffeeRequest.getName(), coffee::setName, "Name", true);
     CommonHelper.validateAndSet(coffeeRequest.getOriginCountry(), coffee::setOriginCountry,
@@ -87,7 +85,7 @@ public class CoffeeServiceImpl implements CoffeeService {
    * Delete coffee
    */
   public CoffeeResponse deleteCoffee(Long coffeeId) {
-    Coffee coffee = CommonHelper.findByIdOrThrow(ENTITY, coffeeRepository, coffeeId);
+    Coffee coffee = CommonHelper.findByIdOrThrow(MODEL, coffeeRepository, coffeeId);
 
     coffeeRepository.delete(coffee);
 

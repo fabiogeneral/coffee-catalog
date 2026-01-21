@@ -1,6 +1,6 @@
 package com.personal.coffee_catalog.repository;
 
-import com.personal.coffee_catalog.entity.Coffee;
+import com.personal.coffee_catalog.model.Coffee;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;
